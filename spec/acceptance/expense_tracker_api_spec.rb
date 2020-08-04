@@ -1,18 +1,24 @@
+require_relative '../../app/api'
 require 'rack/test'
 require 'json'
+
 
 module ExpenseTracker
     RSpec.describe 'Expense Tracker API' do
         include Rack::Test::Methods
 
+        def app
+            ExpenseTracker::API.new
+        end
+
         it 'records submitted expenses' do
-            coffe = {
+            coffee = {
                 'payee' => 'Starbucks',
                 'amount' => 5.75,
                 'date' => '2020-06-10'
             }
 
-            pots '/expenses', JSON.generate(coffee)
+            post '/expenses', JSON.generate(coffee)
         end
     end
 end

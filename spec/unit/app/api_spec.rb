@@ -12,6 +12,11 @@ module ExpenseTracker
         let(:ledger) { instance_double('ExpenseTracker::Ledger') }
 
         describe 'POST /expenses' do
+            def parsing(instruction)
+                parsed = JSON.parse(last_response.body)
+                expect(parsed).to instruction
+            end
+            
             let(:expense) { { 'some' => 'data' } }
             # Before HOOK for DRYING the app.
             before do
@@ -23,9 +28,7 @@ module ExpenseTracker
             context 'when the expense is successfully recorded' do
                 it 'returns the expense id' do
                     post '/expenses', JSON.generate(expense)
-                    
-                    parsed = JSON.parse(last_response.body)
-                    expect(parsed).to include('expense_id' => 417)
+                    parsing(include('expense_id' => 417))
                 end
 
                 it 'responds with a 200(OK)' do
@@ -45,9 +48,7 @@ module ExpenseTracker
 
                 it 'returns and error message' do
                     post '/expenses', JSON.generate(expense)
-
-                    parsed = JSON.parse(last_response.body)
-                    expect(parsed).to include('error' => 'Expense incomplete')
+                    parsing(include('error' => "Expense incomplete"))
                 end
 
                 it 'returns with a 422 (Unprocessable entity)' do
